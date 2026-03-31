@@ -4,6 +4,7 @@ import '../models/product_model.dart';
 import 'add_listing_screen.dart';
 import 'product_detail_screen.dart';
 import 'wallet_screen.dart';
+import 'chat_list_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -356,6 +357,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
             ),
+          ],
+        ),
+      ),
+    );
+  }
 
   void _handleNavigation(int index) {
     switch (index) {
@@ -378,9 +384,12 @@ class _HomeScreenState extends State<HomeScreen> {
         );
         break;
       case 3:
-        // Chat - not implemented yet
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Chat feature in Module 3')),
+        // Chat
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const ChatListScreen(),
+          ),
         );
         break;
       case 4:
@@ -393,11 +402,6 @@ class _HomeScreenState extends State<HomeScreen> {
         );
         break;
     }
-  }
-          ],
-        ),
-      ),
-    );
   }
 
   String _getCategoryIcon(String category) {
