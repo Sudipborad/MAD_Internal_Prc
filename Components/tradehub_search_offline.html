@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TradeHub – Search, Filter & Offline</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --card: #13131a;
+    --accent: #f5a623;
+    --accent2: #ff6b35;
+    --text: #f0f0f0;
+    --muted: #666680;
+    --border: #1e1e2e;
+    --green: #2ecc71;
+    --blue: #4a9eff;
+  }
+  * { margin:0;padding:0;box-sizing:border-box; }
+  body {
+    background: #050510;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    font-family: 'DM Sans', sans-serif;
+    gap: 28px;
+    flex-wrap: wrap;
+    padding: 48px 16px;
+  }
+  .phone {
+    width: 375px; height: 812px;
+    background: var(--bg);
+    border-radius: 48px;
+    border: 2px solid #2a2a3e;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 40px 120px rgba(0,0,0,0.8);
+    flex-shrink: 0;
+  }
+  .label {
+    position: absolute; top: -32px; left: 50%;
+    transform: translateX(-50%);
+    color: #888; font-size: 12px;
+    background: #050510; padding: 4px 12px;
+    border-radius: 20px; border: 1px solid #2a2a3e;
+    white-space: nowrap;
+  }
+  .screen { width:100%;height:100%;display:flex;flex-direction:column;overflow:hidden; }
+  .status-bar { padding:14px 24px 6px;display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--text);font-weight:500;flex-shrink:0; }
+
+  /* ====== SEARCH/FILTER ====== */
+  .search-header { padding:60px 20px 14px;flex-shrink:0; }
+  .search-active {
+    display:flex;align-items:center;gap:10px;
+    background:var(--card);border:1px solid var(--accent)66;
+    border-radius:16px;padding:14px 16px;
+  }
+  .search-back { font-size:18px;color:var(--text); }
+  .search-input-text { flex:1;font-size:15px;color:var(--text); }
+  .search-x { font-size:16px;color:var(--muted); }
+
+  .filter-bar {
+    display:flex;gap:8px;padding:8px 20px 12px;
+    overflow-x:auto;
+  }
+  .filter-bar::-webkit-scrollbar{display:none;}
+  .filter-chip {
+    display:flex;align-items:center;gap:6px;
+    padding:8px 14px;background:var(--card);
+    border:1px solid var(--border);border-radius:12px;
+    font-size:12px;color:var(--muted);white-space:nowrap;
+    flex-shrink:0;
+  }
+  .filter-chip.on { background:var(--accent)22;border-color:var(--accent)66;color:var(--accent); }
+  .result-header { display:flex;justify-content:space-between;align-items:center;padding:0 20px 12px; }
+  .result-count { font-size:13px;color:var(--muted); }
+  .sort-btn { font-size:13px;color:var(--blue);display:flex;align-items:center;gap:4px; }
+
+  .results-list { flex:1;overflow-y:auto;padding:0 20px 80px; }
+  .results-list::-webkit-scrollbar{display:none;}
+  .result-item {
+    display:flex;gap:14px;padding:14px 0;
+    border-bottom:1px solid var(--border)66;
+  }
+  .ri-img { width:80px;height:80px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:36px;flex-shrink:0; }
+  .ri-img-1 { background:linear-gradient(135deg,#1a1a2e,#2a1500); }
+  .ri-img-2 { background:linear-gradient(135deg,#1a2a1a,#0a1a0a); }
+  .ri-img-3 { background:linear-gradient(135deg,#2a1a00,#1a0e00); }
+  .ri-img-4 { background:linear-gradient(135deg,#1a1a2e,#2a1e30); }
+  .ri-img-5 { background:linear-gradient(135deg,#2a2a2a,#1a1a1a); }
+  .ri-info { flex:1;min-width:0; }
+  .ri-name { font-size:15px;font-weight:600;color:var(--text);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+  .ri-cond { display:inline-block;background:var(--green)22;color:var(--green);font-size:10px;padding:2px 7px;border-radius:6px;margin-bottom:6px; }
+  .ri-loc { font-size:11px;color:var(--muted);margin-bottom:4px; }
+  .ri-bottom { display:flex;align-items:center;justify-content:space-between; }
+  .ri-price { font-size:18px;font-weight:700;color:var(--accent); }
+  .ri-stars { font-size:11px;color:var(--accent); }
+  .ri-heart { font-size:20px;flex-shrink:0;padding:6px; }
+
+  /* FILTER SHEET */
+  .filter-sheet {
+    position:absolute;bottom:0;left:0;right:0;
+    background:var(--card);border-top-left-radius:28px;border-top-right-radius:28px;
+    border:1px solid var(--border);
+    padding:20px 24px 40px;
+    z-index:20;
+    box-shadow:0 -20px 60px rgba(0,0,0,0.6);
+  }
+  .sheet-handle { width:40px;height:4px;border-radius:2px;background:var(--border);margin:0 auto 20px; }
+  .sheet-title { font-size:18px;font-weight:700;color:var(--text);margin-bottom:20px; }
+  .filter-section { margin-bottom:20px; }
+  .fs-title { font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:12px; }
+  .range-row { display:flex;align-items:center;gap:10px;margin-bottom:8px; }
+  .range-input {
+    flex:1;padding:10px 14px;
+    background:var(--bg);border:1px solid var(--border);
+    border-radius:12px;color:var(--text);font-size:14px;font-family:'DM Sans',sans-serif;
+    outline:none;
+  }
+  .range-to { color:var(--muted);font-size:13px; }
+  .tag-row { display:flex;flex-wrap:wrap;gap:8px; }
+  .tag { padding:8px 14px;background:var(--bg);border:1px solid var(--border);border-radius:10px;font-size:13px;color:var(--muted);cursor:pointer; }
+  .tag.on { background:var(--accent)22;border-color:var(--accent)66;color:var(--accent); }
+  .slider-wrap { margin-top:8px; }
+  .slider { width:100%;accent-color:var(--accent); }
+  .slider-labels { display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:4px; }
+  .sheet-btns { display:flex;gap:12px;margin-top:20px; }
+  .sh-reset { flex:1;padding:14px;background:var(--bg);border:1px solid var(--border);border-radius:14px;color:var(--muted);font-size:14px;font-weight:600; }
+  .sh-apply { flex:2;padding:14px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:14px;color:#fff;font-size:14px;font-weight:700;cursor:pointer; }
+
+  /* ====== OFFLINE MODE ====== */
+  .offline-banner {
+    background:linear-gradient(135deg,#e74c3c22,#c0392b22);
+    border-bottom:1px solid #e74c3c44;
+    padding:10px 20px;
+    display:flex;align-items:center;gap:10px;
+    flex-shrink:0;
+  }
+  .offline-dot { width:8px;height:8px;border-radius:50%;background:#e74c3c;animation:blink 1.5s ease-in-out infinite; }
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+  .offline-text { font-size:12px;color:#e74c3c;font-weight:600; }
+  .offline-sub { font-size:11px;color:#e74c3c99;margin-left:auto; }
+
+  .cached-header { padding:16px 20px 8px; }
+  .cached-title { font-size:20px;font-weight:700;color:var(--text); }
+  .cached-sub { font-size:12px;color:var(--muted);margin-top:2px;display:flex;align-items:center;gap:6px; }
+  .cache-tag { background:var(--border);color:var(--muted);font-size:10px;padding:2px 8px;border-radius:6px; }
+
+  .offline-grid { display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:8px 20px 80px; }
+  .og-card { background:var(--card);border:1px solid var(--border);border-radius:18px;overflow:hidden;position:relative; }
+  .og-cached-badge { position:absolute;top:8px;right:8px;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);border-radius:8px;padding:3px 8px;font-size:10px;color:var(--muted); }
+  .og-img { height:110px;display:flex;align-items:center;justify-content:center;font-size:40px; }
+  .og-img-a { background:linear-gradient(135deg,#1a1a2e,#2a1500); }
+  .og-img-b { background:linear-gradient(135deg,#1a2a1a,#0a1a0a); }
+  .og-img-c { background:linear-gradient(135deg,#2a1a00,#1a0e00); }
+  .og-img-d { background:linear-gradient(135deg,#1e1a2e,#2a1530); }
+  .og-info { padding:10px 12px 12px; }
+  .og-name { font-size:12px;font-weight:600;color:var(--text);margin-bottom:4px; }
+  .og-price { font-size:15px;font-weight:700;color:var(--accent); }
+  .og-overlay { position:absolute;inset:0;background:rgba(10,10,15,0.5);display:flex;align-items:center;justify-content:center;opacity:0; }
+
+  .sync-footer {
+    position:absolute;bottom:0;left:0;right:0;
+    padding:14px 20px 32px;
+    background:var(--card);border-top:1px solid var(--border);
+    display:flex;align-items:center;justify-content:space-between;
+  }
+  .sync-info { font-size:12px;color:var(--muted); }
+  .sync-info span { color:var(--text);font-weight:600; }
+  .sync-btn {
+    padding:10px 20px;
+    background:var(--border);border:none;border-radius:12px;
+    color:var(--muted);font-size:13px;font-weight:600;
+    opacity:0.5;cursor:not-allowed;
+  }
+
+  .bottom-nav {
+    position:absolute;bottom:0;left:0;right:0;height:80px;
+    background:var(--card);border-top:1px solid var(--border);
+    display:flex;align-items:center;justify-content:space-around;
+    padding:0 8px 16px;
+  }
+  .nav-item{display:flex;flex-direction:column;align-items:center;gap:4px;}
+  .nav-icon{font-size:22px;}
+  .nav-label{font-size:10px;color:var(--muted);}
+  .nav-add{width:52px;height:52px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:28px;color:#fff;margin-bottom:8px;box-shadow:0 8px 24px rgba(245,166,35,0.4);}
+</style>
+</head>
+<body>
+
+<!-- SEARCH RESULTS -->
+<div style="position:relative;margin-top:40px;">
+  <div class="label">Screen 12 – Search Results</div>
+  <div class="phone">
+    <div class="screen">
+      <div class="status-bar"><span>9:41</span><span>📶 🔋</span></div>
+      <div class="search-header">
+        <div class="search-active">
+          <span class="search-back">←</span>
+          <span class="search-input-text">camera</span>
+          <span class="search-x">✕</span>
+        </div>
+      </div>
+      <div class="filter-bar">
+        <div class="filter-chip on">⚡ All Filters</div>
+        <div class="filter-chip on">📍 &lt; 20 km</div>
+        <div class="filter-chip">💰 Price</div>
+        <div class="filter-chip">✅ Condition</div>
+        <div class="filter-chip">⭐ Rating</div>
+        <div class="filter-chip">📅 Date</div>
+      </div>
+      <div class="result-header">
+        <span class="result-count">142 results for "camera"</span>
+        <span class="sort-btn">↕ Sort</span>
+      </div>
+      <div class="results-list">
+        <div class="result-item">
+          <div class="ri-img ri-img-1">📷</div>
+          <div class="ri-info">
+            <div class="ri-name">Canon EOS M50 Mark II</div>
+            <div class="ri-cond">✅ Good</div>
+            <div class="ri-loc">📍 Navrangpura · 2.3 km</div>
+            <div class="ri-bottom"><span class="ri-price">₹28,500</span><span class="ri-stars">★ 4.8 (127)</span></div>
+          </div>
+          <span class="ri-heart">🤍</span>
+        </div>
+        <div class="result-item">
+          <div class="ri-img ri-img-2">📸</div>
+          <div class="ri-info">
+            <div class="ri-name">Nikon D3500 DSLR + Kit</div>
+            <div class="ri-cond">✅ Good</div>
+            <div class="ri-loc">📍 Satellite · 5.1 km</div>
+            <div class="ri-bottom"><span class="ri-price">₹22,000</span><span class="ri-stars">★ 4.6 (43)</span></div>
+          </div>
+          <span class="ri-heart">❤️</span>
+        </div>
+        <div class="result-item">
+          <div class="ri-img ri-img-3">🎥</div>
+          <div class="ri-info">
+            <div class="ri-name">GoPro Hero 11 Black</div>
+            <div class="ri-cond" style="background:var(--blue)22;color:var(--blue);">🆕 Like New</div>
+            <div class="ri-loc">📍 Vastrapur · 7.8 km</div>
+            <div class="ri-bottom"><span class="ri-price">₹24,500</span><span class="ri-stars">★ 5.0 (8)</span></div>
+          </div>
+          <span class="ri-heart">🤍</span>
+        </div>
+        <div class="result-item">
+          <div class="ri-img ri-img-4">📷</div>
+          <div class="ri-info">
+            <div class="ri-name">Sony A6400 Mirrorless</div>
+            <div class="ri-cond">✅ Good</div>
+            <div class="ri-loc">📍 Bopal · 12.4 km</div>
+            <div class="ri-bottom"><span class="ri-price">₹45,000</span><span class="ri-stars">★ 4.9 (62)</span></div>
+          </div>
+          <span class="ri-heart">🤍</span>
+        </div>
+        <div class="result-item">
+          <div class="ri-img ri-img-5">🎞️</div>
+          <div class="ri-info">
+            <div class="ri-name">Fujifilm X-T30 II</div>
+            <div class="ri-cond" style="background:#ff6b3522;color:var(--accent2);">🔧 Fair</div>
+            <div class="ri-loc">📍 Paldi · 9.2 km</div>
+            <div class="ri-bottom"><span class="ri-price">₹38,000</span><span class="ri-stars">★ 4.4 (19)</span></div>
+          </div>
+          <span class="ri-heart">🤍</span>
+        </div>
+      </div>
+      <div class="bottom-nav">
+        <div class="nav-item"><span class="nav-icon">🏠</span><span class="nav-label">Home</span></div>
+        <div class="nav-item"><span class="nav-icon">🔍</span><span class="nav-label" style="color:var(--accent);">Explore</span></div>
+        <div class="nav-add">＋</div>
+        <div class="nav-item"><span class="nav-icon">💬</span><span class="nav-label">Chats</span></div>
+        <div class="nav-item"><span class="nav-icon">👤</span><span class="nav-label">Profile</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FILTER SHEET -->
+<div style="position:relative;margin-top:40px;">
+  <div class="label">Screen 13 – Filter Bottom Sheet</div>
+  <div class="phone">
+    <div class="screen" style="position:relative;">
+      <div class="status-bar"><span>9:41</span><span>📶 🔋</span></div>
+      <!-- Dimmed bg -->
+      <div style="flex:1;background:rgba(0,0,0,0.6);position:relative;">
+        <div style="position:absolute;top:20px;left:20px;right:20px;height:60px;background:var(--card);border-radius:16px;border:1px solid var(--border);display:flex;align-items:center;padding:0 16px;gap:10px;">
+          <span style="color:var(--muted);">🔍</span>
+          <span style="font-size:14px;color:var(--text);">camera</span>
+        </div>
+      </div>
+      <div class="filter-sheet">
+        <div class="sheet-handle"></div>
+        <div class="sheet-title">Filter Results</div>
+        <div class="filter-section">
+          <div class="fs-title">Price Range (₹)</div>
+          <div class="range-row">
+            <input class="range-input" type="number" value="0" placeholder="Min">
+            <span class="range-to">to</span>
+            <input class="range-input" type="number" value="50000" placeholder="Max">
+          </div>
+          <input class="slider" type="range" min="0" max="100000" value="50000">
+          <div class="slider-labels"><span>₹0</span><span>₹1,00,000</span></div>
+        </div>
+        <div class="filter-section">
+          <div class="fs-title">Condition</div>
+          <div class="tag-row">
+            <div class="tag on">🆕 New</div>
+            <div class="tag on">✅ Good</div>
+            <div class="tag">🔧 Fair</div>
+            <div class="tag">⚠️ Poor</div>
+          </div>
+        </div>
+        <div class="filter-section">
+          <div class="fs-title">Distance</div>
+          <div class="tag-row">
+            <div class="tag">5 km</div>
+            <div class="tag on">20 km</div>
+            <div class="tag">50 km</div>
+            <div class="tag">Any</div>
+          </div>
+        </div>
+        <div class="filter-section">
+          <div class="fs-title">Min Rating</div>
+          <div class="tag-row">
+            <div class="tag">Any</div>
+            <div class="tag">3+⭐</div>
+            <div class="tag on">4+⭐</div>
+            <div class="tag">5⭐</div>
+          </div>
+        </div>
+        <div class="sheet-btns">
+          <button class="sh-reset">Reset</button>
+          <button class="sh-apply">Apply Filters (142)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- OFFLINE MODE -->
+<div style="position:relative;margin-top:40px;">
+  <div class="label">Screen 14 – Offline / Cached Mode</div>
+  <div class="phone">
+    <div class="screen">
+      <div class="status-bar"><span>9:41</span><span>📵 🔋</span></div>
+      <div class="offline-banner">
+        <div class="offline-dot"></div>
+        <div>
+          <div class="offline-text">You're Offline</div>
+          <div style="font-size:10px;color:#e74c3c99;">Showing cached listings</div>
+        </div>
+        <div class="offline-sub">Last sync: 2h ago</div>
+      </div>
+      <div class="cached-header">
+        <div class="cached-title">Saved Listings</div>
+        <div class="cached-sub"><span class="cache-tag">📦 32 cached</span> Available offline</div>
+      </div>
+      <div class="offline-grid">
+        <div class="og-card">
+          <div class="og-cached-badge">📦 cached</div>
+          <div class="og-img og-img-a">📷</div>
+          <div class="og-info">
+            <div class="og-name">Canon EOS M50</div>
+            <div class="og-price">₹28,500</div>
+          </div>
+        </div>
+        <div class="og-card">
+          <div class="og-cached-badge">📦 cached</div>
+          <div class="og-img og-img-b">💻</div>
+          <div class="og-info">
+            <div class="og-name">MacBook Air M2</div>
+            <div class="og-price">₹82,000</div>
+          </div>
+        </div>
+        <div class="og-card">
+          <div class="og-cached-badge">📦 cached</div>
+          <div class="og-img og-img-c">🎧</div>
+          <div class="og-info">
+            <div class="og-name">Sony XM4</div>
+            <div class="og-price">₹14,500</div>
+          </div>
+        </div>
+        <div class="og-card">
+          <div class="og-cached-badge">📦 cached</div>
+          <div class="og-img og-img-d">🎮</div>
+          <div class="og-info">
+            <div class="og-name">PS5 Controller</div>
+            <div class="og-price">₹3,200</div>
+          </div>
+        </div>
+        <!-- "online only" cards -->
+        <div class="og-card" style="opacity:0.3;filter:grayscale(1);">
+          <div class="og-img" style="background:#111;font-size:40px;height:110px;display:flex;align-items:center;justify-content:center;">🔒</div>
+          <div class="og-info">
+            <div class="og-name" style="color:var(--muted);">New listing</div>
+            <div class="og-price" style="color:var(--muted);font-size:12px;">Go online to view</div>
+          </div>
+        </div>
+        <div class="og-card" style="opacity:0.3;filter:grayscale(1);">
+          <div class="og-img" style="background:#111;font-size:40px;height:110px;display:flex;align-items:center;justify-content:center;">🔒</div>
+          <div class="og-info">
+            <div class="og-name" style="color:var(--muted);">New listing</div>
+            <div class="og-price" style="color:var(--muted);font-size:12px;">Go online to view</div>
+          </div>
+        </div>
+      </div>
+      <div class="sync-footer">
+        <div class="sync-info">⏱ <span>32 listings</span> cached · <span>3 pending</span> msgs</div>
+        <button class="sync-btn">🔄 Sync</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

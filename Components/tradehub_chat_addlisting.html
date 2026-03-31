@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TradeHub – Chat & Add Listing</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --card: #13131a;
+    --accent: #f5a623;
+    --accent2: #ff6b35;
+    --text: #f0f0f0;
+    --muted: #666680;
+    --border: #1e1e2e;
+    --green: #2ecc71;
+    --blue: #4a9eff;
+    --bubble-me: #f5a62322;
+    --bubble-them: #17171f;
+  }
+  * { margin:0;padding:0;box-sizing:border-box; }
+  body {
+    background: #0a0a1a;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    font-family: 'DM Sans', sans-serif;
+    gap: 28px;
+    flex-wrap: wrap;
+    padding: 48px 16px;
+  }
+  .phone {
+    width: 375px; height: 812px;
+    background: var(--bg);
+    border-radius: 48px;
+    border: 2px solid #2a2a3e;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 40px 120px rgba(0,0,0,0.7);
+    flex-shrink: 0;
+  }
+  .label {
+    position: absolute; top: -32px; left: 50%;
+    transform: translateX(-50%);
+    color: #888; font-size: 12px;
+    background: #0a0a1a; padding: 4px 12px;
+    border-radius: 20px; border: 1px solid #2a2a3e;
+    white-space: nowrap;
+  }
+  .screen { width:100%;height:100%;display:flex;flex-direction:column;overflow:hidden; }
+  .status-bar { padding:14px 24px 6px;display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--text);font-weight:500;flex-shrink:0; }
+
+  /* ====== CHAT LIST ====== */
+  .chat-header { padding: 8px 20px 16px; }
+  .page-title { font-family: 'Bebas Neue', cursive; font-size: 40px; color: var(--text); letter-spacing: 1px; }
+  .page-sub { font-size: 13px; color: var(--muted); margin-top: 2px; }
+  .search-mini {
+    display:flex;align-items:center;gap:10px;
+    background:var(--card);border:1px solid var(--border);
+    border-radius:14px;padding:12px 16px;margin-top:14px;
+  }
+  .chat-list { flex:1;overflow-y:auto;padding:0 0 80px; }
+  .chat-list::-webkit-scrollbar{display:none;}
+  .chat-item {
+    display:flex;align-items:center;gap:14px;
+    padding:14px 20px;
+    border-bottom:1px solid var(--border)66;
+    position:relative;
+  }
+  .chat-av {
+    width:52px;height:52px;border-radius:16px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:24px;flex-shrink:0;
+    position:relative;
+  }
+  .av1 { background:linear-gradient(135deg,#4a9eff,#6a4ef5); }
+  .av2 { background:linear-gradient(135deg,#2ecc71,#1a8a4a); }
+  .av3 { background:linear-gradient(135deg,#f5a623,#ff6b35); }
+  .av4 { background:linear-gradient(135deg,#e74c3c,#c0392b); }
+  .online-dot {
+    position:absolute;bottom:2px;right:2px;
+    width:12px;height:12px;border-radius:50%;
+    background:var(--green);border:2px solid var(--bg);
+  }
+  .chat-body { flex:1;min-width:0; }
+  .chat-name { font-size:15px;font-weight:600;color:var(--text);margin-bottom:4px; }
+  .chat-preview { font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+  .chat-product-tag {
+    display:inline-block;background:var(--accent)22;color:var(--accent);
+    font-size:10px;padding:2px 6px;border-radius:6px;margin-bottom:4px;
+  }
+  .chat-meta { display:flex;flex-direction:column;align-items:flex-end;gap:6px; }
+  .chat-time { font-size:11px;color:var(--muted); }
+  .chat-badge {
+    width:20px;height:20px;border-radius:6px;
+    background:var(--accent);
+    display:flex;align-items:center;justify-content:center;
+    font-size:11px;font-weight:700;color:#000;
+  }
+
+  /* ====== CHAT CONVERSATION ====== */
+  .conv-header {
+    display:flex;align-items:center;gap:12px;
+    padding:60px 16px 14px;
+    border-bottom:1px solid var(--border);
+    flex-shrink:0;
+  }
+  .conv-back { font-size:20px;color:var(--text); }
+  .conv-av { width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--blue),#6a4ef5);display:flex;align-items:center;justify-content:center;font-size:18px; }
+  .conv-info { flex:1; }
+  .conv-name { font-size:16px;font-weight:600;color:var(--text); }
+  .conv-status { font-size:12px;color:var(--green); }
+  .conv-actions { display:flex;gap:10px; }
+  .conv-act { width:36px;height:36px;background:var(--card);border-radius:10px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:16px; }
+
+  .product-context {
+    margin:12px 16px;
+    background:var(--card);border:1px solid var(--border);
+    border-radius:14px;padding:12px;
+    display:flex;align-items:center;gap:12px;
+    flex-shrink:0;
+  }
+  .pc-img { width:50px;height:50px;border-radius:10px;background:linear-gradient(135deg,#1a1a2e,#2a1500);display:flex;align-items:center;justify-content:center;font-size:22px; }
+  .pc-name { font-size:13px;font-weight:600;color:var(--text); }
+  .pc-price { font-size:15px;font-weight:700;color:var(--accent);margin-top:2px; }
+  .pc-make { font-size:12px;color:var(--blue);margin-top:2px; }
+
+  .messages-area { flex:1;overflow-y:auto;padding:12px 16px; }
+  .messages-area::-webkit-scrollbar{display:none;}
+  .msg-date { text-align:center;font-size:11px;color:var(--muted);margin:8px 0 14px; }
+  .msg-row { display:flex;margin-bottom:12px; }
+  .msg-row.me { justify-content:flex-end; }
+  .bubble {
+    max-width:70%;padding:12px 14px;
+    border-radius:18px;font-size:14px;line-height:1.5;
+  }
+  .bubble-them { background:var(--bubble-them);color:var(--text);border-bottom-left-radius:4px;border:1px solid var(--border); }
+  .bubble-me { background:linear-gradient(135deg,var(--accent)44,var(--accent2)22);color:var(--text);border-bottom-right-radius:4px;border:1px solid var(--accent)44; }
+  .msg-time { font-size:10px;color:var(--muted);margin-top:4px;text-align:right; }
+
+  .chat-input-bar {
+    padding:12px 16px 28px;
+    display:flex;align-items:center;gap:10px;
+    border-top:1px solid var(--border);
+    flex-shrink:0;
+  }
+  .chat-attach { width:40px;height:40px;background:var(--card);border-radius:12px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:18px; }
+  .chat-field {
+    flex:1;background:var(--card);border:1px solid var(--border);
+    border-radius:14px;padding:12px 16px;
+    font-size:14px;color:var(--text);font-family:'DM Sans',sans-serif;
+    outline:none;
+  }
+  .chat-send {
+    width:40px;height:40px;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    border-radius:12px;border:none;
+    display:flex;align-items:center;justify-content:center;
+    font-size:18px;cursor:pointer;
+  }
+
+  /* ====== ADD LISTING ====== */
+  .add-header {
+    padding:60px 20px 16px;
+    border-bottom:1px solid var(--border);
+    flex-shrink:0;
+  }
+  .add-title { font-family:'Bebas Neue',cursive;font-size:36px;color:var(--text);letter-spacing:1px; }
+  .add-sub { font-size:13px;color:var(--muted);margin-top:2px; }
+  .add-body { flex:1;overflow-y:auto;padding:20px 20px 100px; }
+  .add-body::-webkit-scrollbar{display:none;}
+
+  .photo-upload {
+    border:2px dashed var(--border);border-radius:20px;
+    height:160px;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;gap:8px;
+    margin-bottom:20px;cursor:pointer;
+    background:var(--card)66;
+    position:relative;overflow:hidden;
+  }
+  .photo-row { display:flex;gap:10px;margin-bottom:20px; }
+  .photo-thumb {
+    width:80px;height:80px;border-radius:14px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:32px;border:1px solid var(--border);
+    position:relative;
+  }
+  .photo-thumb.filled { background:linear-gradient(135deg,#1a1a2e,#2a1500); }
+  .photo-thumb.add-more { background:var(--card);border:2px dashed var(--border);font-size:24px;color:var(--muted); }
+  .ph-del { position:absolute;top:-6px;right:-6px;width:20px;height:20px;background:#e74c3c;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff; }
+
+  .form-group { margin-bottom:16px; }
+  .form-label { font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;display:block; }
+  .form-input {
+    width:100%;padding:14px 16px;
+    background:var(--card);border:1px solid var(--border);
+    border-radius:14px;color:var(--text);font-size:15px;
+    font-family:'DM Sans',sans-serif;outline:none;
+  }
+  .form-input::placeholder{color:var(--muted);}
+  .form-textarea { height:100px;resize:none;line-height:1.6; }
+  .form-row { display:flex;gap:12px; }
+  .form-row .form-group { flex:1; }
+
+  .condition-row { display:flex;gap:8px;margin-bottom:16px; }
+  .cond-chip {
+    flex:1;padding:10px 8px;
+    background:var(--card);border:1px solid var(--border);
+    border-radius:12px;font-size:12px;color:var(--muted);
+    text-align:center;cursor:pointer;
+  }
+  .cond-chip.active { background:var(--green)22;border-color:var(--green)66;color:var(--green);font-weight:600; }
+
+  .price-input-wrap { position:relative; }
+  .price-sym { position:absolute;left:16px;top:50%;transform:translateY(-50%);font-size:18px;font-weight:700;color:var(--accent); }
+  .price-field { padding-left:36px; }
+
+  .add-footer {
+    position:absolute;bottom:0;left:0;right:0;
+    padding:16px 20px 32px;
+    background:var(--bg);border-top:1px solid var(--border);
+  }
+  .submit-btn {
+    width:100%;padding:18px;border:none;border-radius:16px;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    color:#fff;font-size:16px;font-weight:700;cursor:pointer;
+    box-shadow:0 8px 24px rgba(245,166,35,0.3);
+  }
+
+  /* ====== BOTTOM NAV ====== */
+  .bottom-nav {
+    position:absolute;bottom:0;left:0;right:0;height:80px;
+    background:var(--card);border-top:1px solid var(--border);
+    display:flex;align-items:center;justify-content:space-around;
+    padding:0 8px 16px;
+  }
+  .nav-item{display:flex;flex-direction:column;align-items:center;gap:4px;}
+  .nav-icon{font-size:22px;}
+  .nav-label{font-size:10px;color:var(--muted);}
+  .nav-add{width:52px;height:52px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:28px;color:#fff;margin-bottom:8px;box-shadow:0 8px 24px rgba(245,166,35,0.4);}
+</style>
+</head>
+<body>
+
+<!-- CHAT LIST -->
+<div style="position:relative;margin-top:40px;">
+  <div class="label">Screen 6 – Chat List</div>
+  <div class="phone">
+    <div class="screen">
+      <div class="status-bar"><span>9:41</span><span>📶 🔋</span></div>
+      <div class="chat-header">
+        <div class="page-title">Messages</div>
+        <div class="page-sub">3 active conversations</div>
+        <div class="search-mini">
+          <span style="font-size:16px;">🔍</span>
+          <span style="font-size:14px;color:var(--muted);">Search conversations...</span>
+        </div>
+      </div>
+      <div class="chat-list">
+        <div class="chat-item">
+          <div class="chat-av av1">👨<div class="online-dot"></div></div>
+          <div class="chat-body">
+            <div class="chat-product-tag">📷 Canon EOS M50</div>
+            <div class="chat-name">Rahul Mehta</div>
+            <div class="chat-preview">Is the price negotiable? I can do ₹26k</div>
+          </div>
+          <div class="chat-meta"><span class="chat-time">2m ago</span><div class="chat-badge">2</div></div>
+        </div>
+        <div class="chat-item">
+          <div class="chat-av av2">👩</div>
+          <div class="chat-body">
+            <div class="chat-product-tag">💻 MacBook Air M2</div>
+            <div class="chat-name">Priya Shah</div>
+            <div class="chat-preview">Can I come see it tomorrow at 11am?</div>
+          </div>
+          <div class="chat-meta"><span class="chat-time">1h ago</span></div>
+        </div>
+        <div class="chat-item">
+          <div class="chat-av av3">👦<div class="online-dot"></div></div>
+          <div class="chat-body">
+            <div class="chat-product-tag">🎮 PS5 Controller</div>
+            <div class="chat-name">Dev Patel</div>
+            <div class="chat-preview">Sure! I'll confirm payment via UPI 👍</div>
+          </div>
+          <div class="chat-meta"><span class="chat-time">3h ago</span><div class="chat-badge">1</div></div>
+        </div>
+        <div class="chat-item">
+          <div class="chat-av av4">👩</div>
+          <div class="chat-body">
+            <div class="chat-product-tag">🎧 Sony WH-1000XM4</div>
+            <div class="chat-name">Sneha Joshi</div>
+            <div class="chat-preview">Thanks for the quick delivery! ⭐⭐⭐⭐⭐</div>
+          </div>
+          <div class="chat-meta"><span class="chat-time">Yesterday</span></div>
+        </div>
+        <div class="chat-item" style="opacity:0.5;">
+          <div class="chat-av" style="background:linear-gradient(135deg,#9b59b6,#8e44ad);width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:24px;">👨‍💼</div>
+          <div class="chat-body">
+            <div class="chat-product-tag">🚲 Gear Cycle</div>
+            <div class="chat-name">Karan Verma</div>
+            <div class="chat-preview">Okay, I'll think about it.</div>
+          </div>
+          <div class="chat-meta"><span class="chat-time">Mon</span></div>
+        </div>
+      </div>
+      <div class="bottom-nav">
+        <div class="nav-item"><span class="nav-icon">🏠</span><span class="nav-label">Home</span></div>
+        <div class="nav-item"><span class="nav-icon">🔍</span><span class="nav-label">Explore</span></div>
+        <div class="nav-add">＋</div>
+        <div class="nav-item"><span class="nav-icon">💬</span><span class="nav-label" style="color:var(--accent);">Chats</span></div>
+        <div class="nav-item"><span class="nav-icon">👤</span><span class="nav-label">Profile</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CHAT CONVERSATION -->
+<div style="position:relative;margin-top:40px;">
+  <div class="label">Screen 7 – Chat Conversation</div>
+  <div class="phone">
+    <div class="screen">
+      <div class="conv-header">
+        <span class="conv-back">←</span>
+        <div class="conv-av">👨</div>
+        <div class="conv-info">
+          <div class="conv-name">Rahul Mehta</div>
+          <div class="conv-status">🟢 Online</div>
+        </div>
+        <div class="conv-actions">
+          <div class="conv-act">📞</div>
+          <div class="conv-act">⋮</div>
+        </div>
+      </div>
+      <div class="product-context">
+        <div class="pc-img">📷</div>
+        <div>
+          <div class="pc-name">Canon EOS M50 Mark II</div>
+          <div class="pc-price">₹28,500</div>
+          <div class="pc-make">💳 Make an offer</div>
+        </div>
+      </div>
+      <div class="messages-area">
+        <div class="msg-date">Today, 2:30 PM</div>
+        <div class="msg-row">
+          <div>
+            <div class="bubble bubble-them">Hey! Is the Canon camera still available?</div>
+            <div class="msg-time" style="text-align:left;">2:30 PM</div>
+          </div>
+        </div>
+        <div class="msg-row me">
+          <div>
+            <div class="bubble bubble-me">Yes, it's available! Just listed today 😊</div>
+            <div class="msg-time">2:31 PM ✓✓</div>
+          </div>
+        </div>
+        <div class="msg-row">
+          <div>
+            <div class="bubble bubble-them">Is the price negotiable? I can do ₹26,000. It's been 8 months old right?</div>
+            <div class="msg-time" style="text-align:left;">2:32 PM</div>
+          </div>
+        </div>
+        <div class="msg-row me">
+          <div>
+            <div class="bubble bubble-me">Best I can do is ₹27,500. It's in excellent condition and comes with all accessories! 📦</div>
+            <div class="msg-time">2:33 PM ✓✓</div>
+          </div>
+        </div>
+        <div class="msg-row">
+          <div>
+            <div class="bubble bubble-them">Deal! Can we meet at Ahmedabad BRTS today at 5pm? I'll pay via UPI 🙌</div>
+            <div class="msg-time" style="text-align:left;">2:35 PM</div>
+          </div>
+        </div>
+        <div class="msg-row me">
+          <div>
+            <div class="bubble bubble-me">Perfect! See you at 5 👍</div>
+            <div class="msg-time">2:36 PM ✓</div>
+          </div>
+        </div>
+      </div>
+      <div class="chat-input-bar">
+        <div class="chat-attach">📎</div>
+        <input class="chat-field" placeholder="Type a message..." type="text">
+        <button class="chat-send">➤</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ADD LISTING -->
+<div style="position:relative;margin-top:40px;">
+  <div class="label">Screen 8 – Add Listing</div>
+  <div class="phone">
+    <div class="screen">
+      <div class="add-header">
+        <div class="add-title">List Your Item</div>
+        <div class="add-sub">It takes just 60 seconds to go live</div>
+      </div>
+      <div class="add-body">
+        <!-- Photos -->
+        <div class="form-label">Photos (3 uploaded)</div>
+        <div class="photo-row">
+          <div class="photo-thumb filled">📷<div class="ph-del">✕</div></div>
+          <div class="photo-thumb filled">📸<div class="ph-del">✕</div></div>
+          <div class="photo-thumb filled">🖼️<div class="ph-del">✕</div></div>
+          <div class="photo-thumb add-more">＋</div>
+        </div>
+
+        <!-- Title -->
+        <div class="form-group">
+          <label class="form-label">Product Title</label>
+          <input class="form-input" type="text" placeholder="e.g. Canon EOS M50 Camera" value="Canon EOS M50 Mark II">
+        </div>
+
+        <!-- Category -->
+        <div class="form-group">
+          <label class="form-label">Category</label>
+          <input class="form-input" type="text" placeholder="Select category" value="📱 Electronics">
+        </div>
+
+        <!-- Condition -->
+        <div class="form-label">Condition</div>
+        <div class="condition-row">
+          <div class="cond-chip">🆕 New</div>
+          <div class="cond-chip active">✅ Good</div>
+          <div class="cond-chip">🔧 Fair</div>
+          <div class="cond-chip">⚠️ Poor</div>
+        </div>
+
+        <!-- Price -->
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Price (₹)</label>
+            <div class="price-input-wrap">
+              <span class="price-sym">₹</span>
+              <input class="form-input price-field" type="number" placeholder="0" value="28500">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Original Price</label>
+            <div class="price-input-wrap">
+              <span class="price-sym">₹</span>
+              <input class="form-input price-field" type="number" placeholder="0" value="58000">
+            </div>
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div class="form-group">
+          <label class="form-label">Description</label>
+          <textarea class="form-input form-textarea" placeholder="Describe your item, accessories included, reason for selling...">Used for 8 months. Comes with original box, 2 batteries, 32GB card. Selling due to upgrade.</textarea>
+        </div>
+
+        <!-- Location -->
+        <div class="form-group">
+          <label class="form-label">Location</label>
+          <input class="form-input" type="text" placeholder="📍 Pick location" value="📍 Navrangpura, Ahmedabad">
+        </div>
+      </div>
+      <div class="add-footer">
+        <button class="submit-btn">🚀 Publish Listing</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

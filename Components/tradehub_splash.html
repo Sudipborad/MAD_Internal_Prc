@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TradeHub – Splash & Onboarding</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --card: #13131a;
+    --accent: #f5a623;
+    --accent2: #ff6b35;
+    --text: #f0f0f0;
+    --muted: #666680;
+    --border: #1e1e2e;
+    --green: #2ecc71;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #1a1a2e;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    font-family: 'DM Sans', sans-serif;
+    gap: 24px;
+    flex-wrap: wrap;
+    padding: 32px 16px;
+  }
+  .phone {
+    width: 375px;
+    height: 812px;
+    background: var(--bg);
+    border-radius: 48px;
+    border: 2px solid #2a2a3e;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 40px 120px rgba(0,0,0,0.6), 0 0 0 1px #0a0a0f;
+    flex-shrink: 0;
+  }
+  .screen { width: 100%; height: 100%; position: relative; display: none; flex-direction: column; }
+  .screen.active { display: flex; }
+  .label {
+    position: absolute;
+    top: -32px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #888;
+    font-size: 12px;
+    font-family: 'DM Sans', sans-serif;
+    white-space: nowrap;
+    background: #1a1a2e;
+    padding: 4px 12px;
+    border-radius: 20px;
+    border: 1px solid #2a2a3e;
+  }
+
+  /* SPLASH */
+  .splash-bg {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 30% 20%, #f5a62330 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 80%, #ff6b3520 0%, transparent 60%),
+                var(--bg);
+  }
+  .splash-content {
+    position: relative; z-index: 1;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    height: 100%; gap: 16px;
+  }
+  .splash-icon {
+    width: 96px; height: 96px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 28px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 48px;
+    box-shadow: 0 0 60px rgba(245,166,35,0.4);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%,100% { box-shadow: 0 0 40px rgba(245,166,35,0.3); }
+    50% { box-shadow: 0 0 80px rgba(245,166,35,0.6); }
+  }
+  .splash-logo {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 56px;
+    color: var(--text);
+    letter-spacing: 4px;
+  }
+  .splash-logo span { color: var(--accent); }
+  .splash-tag {
+    font-size: 14px; color: var(--muted);
+    font-weight: 300; letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  .splash-bar {
+    width: 120px; height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    margin-top: 40px;
+    overflow: hidden;
+  }
+  .splash-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 2px;
+    animation: load 2.5s ease forwards;
+    width: 0;
+  }
+  @keyframes load { to { width: 100%; } }
+
+  /* ONBOARDING */
+  .onboard-slide {
+    display: flex; flex-direction: column;
+    height: 100%;
+  }
+  .onboard-art {
+    height: 420px; position: relative;
+    overflow: hidden;
+  }
+  .art-bg-1 {
+    background: linear-gradient(160deg, #1a1a2e 0%, #0a0a0f 50%, #1e0e00 100%);
+    height: 100%; display: flex; align-items: center; justify-content: center;
+  }
+  .art-grid {
+    position: absolute; inset: 0;
+    background-image: linear-gradient(var(--border) 1px, transparent 1px),
+                      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 40px 40px;
+    opacity: 0.4;
+  }
+  .art-card-float {
+    position: relative; z-index: 1;
+    width: 220px; height: 280px;
+    background: var(--card);
+    border-radius: 20px;
+    border: 1px solid #2a2a3e;
+    display: flex; flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+    transform: rotate(-6deg);
+    animation: float1 3s ease-in-out infinite;
+  }
+  .art-card-float2 {
+    position: absolute; top: 60px; right: 60px;
+    width: 180px; height: 220px;
+    background: linear-gradient(135deg, var(--accent)22, var(--card));
+    border-radius: 16px;
+    border: 1px solid var(--accent)44;
+    transform: rotate(8deg);
+    animation: float2 3.5s ease-in-out infinite;
+    z-index: 0;
+  }
+  @keyframes float1 { 0%,100%{transform:rotate(-6deg) translateY(0)} 50%{transform:rotate(-6deg) translateY(-10px)} }
+  @keyframes float2 { 0%,100%{transform:rotate(8deg) translateY(0)} 50%{transform:rotate(8deg) translateY(8px)} }
+  .art-img { width: 100%; height: 160px; background: linear-gradient(135deg, #2a1a00, #3a2010); display:flex;align-items:center;justify-content:center;font-size:60px; }
+  .art-info { padding: 12px 14px; }
+  .art-name { font-size: 14px; font-weight: 600; color: var(--text); }
+  .art-price { font-size: 18px; font-weight: 700; color: var(--accent); margin-top: 4px; }
+  .art-stars { color: var(--accent); font-size: 11px; margin-top: 4px; }
+  .onboard-body {
+    flex: 1; padding: 32px 28px 40px;
+    display: flex; flex-direction: column; gap: 16px;
+  }
+  .dots { display:flex; gap:8px; }
+  .dot { width:8px;height:8px;border-radius:4px;background:var(--border); }
+  .dot.active { width:24px;background:var(--accent); }
+  .onboard-title {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 42px; color: var(--text); line-height: 1.1;
+    letter-spacing: 1px;
+  }
+  .onboard-title span { color: var(--accent); }
+  .onboard-desc { font-size: 15px; color: var(--muted); line-height: 1.6; font-weight: 300; }
+  .onboard-btn {
+    margin-top: auto;
+    width: 100%; padding: 18px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border: none; border-radius: 16px;
+    font-size: 16px; font-weight: 700;
+    color: #fff; letter-spacing: 0.5px;
+    cursor: pointer;
+    box-shadow: 0 8px 30px rgba(245,166,35,0.3);
+  }
+  .onboard-skip {
+    text-align: center; color: var(--muted);
+    font-size: 14px; margin-top: 12px;
+  }
+  .onboard-skip span { color: var(--accent); }
+
+  /* LOGIN */
+  .login-screen {
+    background: var(--bg);
+    padding: 60px 28px 40px;
+    display: flex; flex-direction: column; gap: 0;
+  }
+  .login-top { margin-bottom: 40px; }
+  .login-icon { font-size: 48px; margin-bottom: 16px; }
+  .login-title { font-family:'Bebas Neue',cursive; font-size:48px; color:var(--text); letter-spacing:2px; }
+  .login-sub { font-size:14px; color:var(--muted); margin-top:4px; font-weight:300; }
+  .input-group { margin-bottom: 16px; }
+  .input-label { font-size: 12px; color: var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; display:block; }
+  .input-field {
+    width: 100%; padding: 16px 18px;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; color: var(--text);
+    font-size: 15px; font-family: 'DM Sans', sans-serif;
+    outline: none;
+  }
+  .input-field::placeholder { color: var(--muted); }
+  .input-row { position: relative; }
+  .input-icon { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size:18px; }
+  .login-forgot { text-align:right; color:var(--accent); font-size:13px; margin-top:-4px; margin-bottom:24px; }
+  .login-btn {
+    width:100%; padding:18px; border:none; border-radius:16px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color:#fff; font-size:16px; font-weight:700;
+    cursor:pointer; margin-bottom:24px;
+    box-shadow: 0 8px 30px rgba(245,166,35,0.3);
+  }
+  .divider { display:flex; align-items:center; gap:12px; margin-bottom:24px; }
+  .divider-line { flex:1; height:1px; background:var(--border); }
+  .divider-text { color:var(--muted); font-size:13px; }
+  .social-row { display:flex; gap:12px; }
+  .social-btn {
+    flex:1; padding:14px; background:var(--card);
+    border:1px solid var(--border); border-radius:14px;
+    display:flex; align-items:center; justify-content:center;
+    gap:8px; color:var(--text); font-size:14px; cursor:pointer;
+  }
+  .login-signup { text-align:center; color:var(--muted); font-size:14px; margin-top:auto; }
+  .login-signup span { color:var(--accent); }
+
+</style>
+</head>
+<body>
+
+<!-- SPLASH -->
+<div style="position:relative; margin-top:40px;">
+  <div class="label">Screen 1 – Splash</div>
+  <div class="phone">
+    <div class="screen active">
+      <div class="splash-bg"></div>
+      <div class="splash-content">
+        <div class="splash-icon">🛍️</div>
+        <div class="splash-logo">Trade<span>Hub</span></div>
+        <div class="splash-tag">Buy · Sell · Trust</div>
+        <div class="splash-bar"><div class="splash-bar-fill"></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ONBOARDING 1 -->
+<div style="position:relative; margin-top:40px;">
+  <div class="label">Screen 2 – Onboarding (List)</div>
+  <div class="phone">
+    <div class="screen active">
+      <div class="onboard-slide">
+        <div class="onboard-art">
+          <div class="art-bg-1">
+            <div class="art-grid"></div>
+            <div class="art-card-float2"></div>
+            <div class="art-card-float">
+              <div class="art-img">📷</div>
+              <div class="art-info">
+                <div class="art-name">Canon EOS M50</div>
+                <div class="art-price">₹28,500</div>
+                <div class="art-stars">★★★★★ 4.8</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="onboard-body">
+          <div class="dots">
+            <div class="dot active"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+          </div>
+          <div class="onboard-title">List Anything<br><span>In Seconds</span></div>
+          <div class="onboard-desc">Snap a photo, set your price, and reach thousands of buyers nearby. No hassle, no fees.</div>
+          <button class="onboard-btn">Get Started</button>
+          <div class="onboard-skip">Already have an account? <span>Sign In</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LOGIN -->
+<div style="position:relative; margin-top:40px;">
+  <div class="label">Screen 3 – Login</div>
+  <div class="phone">
+    <div class="screen active login-screen">
+      <div class="login-top">
+        <div class="login-icon">🛍️</div>
+        <div class="login-title">Welcome<br>Back</div>
+        <div class="login-sub">Sign in to continue trading</div>
+      </div>
+      <div class="input-group">
+        <span class="input-label">Email</span>
+        <div class="input-row">
+          <input class="input-field" type="email" placeholder="you@example.com">
+          <span class="input-icon">✉️</span>
+        </div>
+      </div>
+      <div class="input-group">
+        <span class="input-label">Password</span>
+        <div class="input-row">
+          <input class="input-field" type="password" placeholder="••••••••">
+          <span class="input-icon">👁️</span>
+        </div>
+      </div>
+      <div class="login-forgot">Forgot Password?</div>
+      <button class="login-btn">Sign In</button>
+      <div class="divider">
+        <div class="divider-line"></div>
+        <span class="divider-text">or continue with</span>
+        <div class="divider-line"></div>
+      </div>
+      <div class="social-row">
+        <div class="social-btn">🌐 Google</div>
+        <div class="social-btn">🍎 Apple</div>
+      </div>
+      <div class="login-signup" style="margin-top:24px;">New here? <span>Create Account</span></div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

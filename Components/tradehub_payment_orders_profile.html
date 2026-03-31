@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TradeHub – Payment, Orders & Profile</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --card: #13131a;
+    --accent: #f5a623;
+    --accent2: #ff6b35;
+    --text: #f0f0f0;
+    --muted: #666680;
+    --border: #1e1e2e;
+    --green: #2ecc71;
+    --blue: #4a9eff;
+    --purple: #9b59b6;
+  }
+  * { margin:0;padding:0;box-sizing:border-box; }
+  body {
+    background: #060610;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    font-family: 'DM Sans', sans-serif;
+    gap: 28px;
+    flex-wrap: wrap;
+    padding: 48px 16px;
+  }
+  .phone {
+    width: 375px; height: 812px;
+    background: var(--bg);
+    border-radius: 48px;
+    border: 2px solid #2a2a3e;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 40px 120px rgba(0,0,0,0.8);
+    flex-shrink: 0;
+  }
+  .label {
+    position: absolute; top: -32px; left: 50%;
+    transform: translateX(-50%);
+    color: #888; font-size: 12px;
+    background: #060610; padding: 4px 12px;
+    border-radius: 20px; border: 1px solid #2a2a3e;
+    white-space: nowrap;
+  }
+  .screen { width:100%;height:100%;display:flex;flex-direction:column;overflow:hidden; }
+  .status-bar { padding:14px 24px 6px;display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--text);font-weight:500;flex-shrink:0; }
+  .scroll-area { flex:1;overflow-y:auto;padding-bottom:20px; }
+  .scroll-area::-webkit-scrollbar{display:none;}
+
+  /* ====== PAYMENT ====== */
+  .pay-header {
+    padding:60px 20px 16px;
+    border-bottom:1px solid var(--border);
+    flex-shrink:0;
+  }
+  .pay-title { font-family:'Bebas Neue',cursive;font-size:36px;color:var(--text);letter-spacing:1px; }
+  .pay-sub { font-size:13px;color:var(--muted);margin-top:2px; }
+
+  .order-summary {
+    margin:16px;background:var(--card);
+    border:1px solid var(--border);border-radius:18px;
+    padding:16px;flex-shrink:0;
+  }
+  .os-item { display:flex;align-items:center;gap:12px; }
+  .os-img { width:60px;height:60px;border-radius:12px;background:linear-gradient(135deg,#1a1a2e,#2a1500);display:flex;align-items:center;justify-content:center;font-size:28px; }
+  .os-info { flex:1; }
+  .os-name { font-size:14px;font-weight:600;color:var(--text); }
+  .os-cond { font-size:11px;color:var(--green);margin-top:2px; }
+  .os-price { font-size:20px;font-weight:700;color:var(--accent); }
+  .os-divider { height:1px;background:var(--border);margin:14px 0; }
+  .os-row { display:flex;justify-content:space-between;margin-bottom:8px; }
+  .os-key { font-size:13px;color:var(--muted); }
+  .os-val { font-size:13px;color:var(--text);font-weight:500; }
+  .os-total { border-top:1px solid var(--border);padding-top:12px;margin-top:4px; }
+  .os-total .os-key { font-weight:700;color:var(--text);font-size:15px; }
+  .os-total .os-val { font-weight:700;color:var(--accent);font-size:18px; }
+
+  .pay-method-title { font-size:14px;font-weight:600;color:var(--text);margin:16px 16px 10px; }
+  .pay-methods { padding:0 16px;display:flex;flex-direction:column;gap:10px; }
+  .pay-method {
+    display:flex;align-items:center;gap:14px;
+    padding:14px 16px;
+    background:var(--card);border:1px solid var(--border);
+    border-radius:16px;cursor:pointer;
+  }
+  .pay-method.selected { border-color:var(--accent)88;background:var(--accent)11; }
+  .pay-icon { width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px; }
+  .pay-upi { background:linear-gradient(135deg,#2ecc7122,#1a8a4a22);border:1px solid #2ecc7144; }
+  .pay-card { background:linear-gradient(135deg,#4a9eff22,#4a4aff22);border:1px solid #4a9eff44; }
+  .pay-wallet { background:linear-gradient(135deg,#9b59b622,#6a4ef522);border:1px solid #9b59b644; }
+  .pay-cod { background:linear-gradient(135deg,#f5a62322,#ff6b3522);border:1px solid #f5a62344; }
+  .pay-label { flex:1; }
+  .pay-name { font-size:14px;font-weight:600;color:var(--text); }
+  .pay-desc { font-size:11px;color:var(--muted);margin-top:2px; }
+  .pay-radio { width:20px;height:20px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center; }
+  .pay-radio.on { border-color:var(--accent); }
+  .pay-radio.on::after { content:'';width:10px;height:10px;border-radius:50%;background:var(--accent); }
+
+  .upi-input-wrap { padding:0 16px;margin-top:12px; }
+  .upi-input {
+    width:100%;padding:14px 16px;
+    background:var(--card);border:1px solid var(--accent)44;
+    border-radius:14px;color:var(--text);font-size:14px;
+    font-family:'DM Sans',sans-serif;outline:none;
+  }
+  .pay-footer {
+    position:absolute;bottom:0;left:0;right:0;
+    padding:16px 20px 32px;
+    background:var(--bg);border-top:1px solid var(--border);
+  }
+  .secure-tag { display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:12px;font-size:12px;color:var(--green); }
+  .pay-btn {
+    width:100%;padding:18px;border:none;border-radius:16px;
+    background:linear-gradient(135deg,var(--green),#1a8a4a);
+    color:#fff;font-size:16px;font-weight:700;cursor:pointer;
+    box-shadow:0 8px 24px rgba(46,204,113,0.3);
+  }
+
+  /* ====== ORDER TRACKING ====== */
+  .track-header {
+    padding:60px 20px 16px;border-bottom:1px solid var(--border);flex-shrink:0;
+  }
+  .track-id { font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px; }
+  .track-title { font-family:'Bebas Neue',cursive;font-size:36px;color:var(--text);letter-spacing:1px;margin-top:4px; }
+
+  .track-product {
+    margin:16px;padding:14px;
+    background:var(--card);border:1px solid var(--border);
+    border-radius:16px;display:flex;gap:12px;
+    flex-shrink:0;
+  }
+  .tp-img { width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,#1a1a2e,#2a1500);display:flex;align-items:center;justify-content:center;font-size:26px; }
+  .tp-name { font-size:14px;font-weight:600;color:var(--text); }
+  .tp-price { font-size:16px;font-weight:700;color:var(--accent);margin-top:4px; }
+  .tp-status { display:inline-block;margin-top:6px;background:var(--green)22;color:var(--green);font-size:11px;font-weight:600;padding:3px 8px;border-radius:8px; }
+
+  .track-map {
+    margin:0 16px 16px;height:130px;
+    background:linear-gradient(160deg,#0e1e0e,#1a2a1a);
+    border-radius:16px;border:1px solid var(--border);
+    display:flex;align-items:center;justify-content:center;
+    font-size:13px;color:var(--muted);position:relative;overflow:hidden;
+    flex-shrink:0;
+  }
+  .map-dots {
+    position:absolute;inset:0;
+    background-image:radial-gradient(var(--border) 1px,transparent 1px);
+    background-size:20px 20px;
+  }
+  .map-route {
+    position:absolute;
+    width:70%;height:3px;
+    background:linear-gradient(90deg,var(--green),var(--accent));
+    border-radius:2px;
+    box-shadow:0 0 12px var(--green)66;
+  }
+  .map-pin { position:absolute;font-size:24px; }
+  .map-pin.start { left:14%; }
+  .map-pin.end { right:10%; }
+  .map-rider { position:absolute;left:50%;font-size:22px;transform:translateX(-50%);
+    background:var(--card);border-radius:50%;padding:4px;border:2px solid var(--green); }
+  .map-label { position:absolute;bottom:10px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--green);background:var(--card);padding:3px 10px;border-radius:8px;border:1px solid var(--border); }
+
+  .timeline { padding:0 20px 16px; }
+  .tl-title { font-size:14px;font-weight:600;color:var(--text);margin-bottom:16px; }
+  .tl-step { display:flex;gap:14px;margin-bottom:0; }
+  .tl-left { display:flex;flex-direction:column;align-items:center; }
+  .tl-dot { width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0; }
+  .tl-dot.done { background:var(--green);color:#fff; }
+  .tl-dot.active { background:var(--accent);color:#000;box-shadow:0 0 12px var(--accent)66; }
+  .tl-dot.pending { background:var(--card);border:2px solid var(--border);color:var(--muted); }
+  .tl-line { width:2px;flex:1;margin:4px 0;border-radius:2px; }
+  .tl-line.done { background:var(--green); }
+  .tl-line.pending { background:var(--border); }
+  .tl-line.partial { background:linear-gradient(var(--accent),var(--border)); }
+  .tl-info { flex:1;padding-bottom:20px; }
+  .tl-label { font-size:14px;font-weight:600;color:var(--text); }
+  .tl-label.pending { color:var(--muted); }
+  .tl-desc { font-size:12px;color:var(--muted);margin-top:3px;line-height:1.5; }
+  .tl-time { font-size:11px;color:var(--muted);margin-top:4px; }
+
+  .track-footer {
+    padding:12px 20px 32px;
+    border-top:1px solid var(--border);
+    flex-shrink:0;
+  }
+  .contact-seller-btn {
+    width:100%;padding:16px;border:1px solid var(--border);
+    border-radius:14px;background:var(--card);
+    color:var(--text);font-size:15px;font-weight:600;
+    cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;
+  }
+
+  /* ====== PROFILE ====== */
+  .profile-cover {
+    height:180px;
+    background:linear-gradient(160deg,#1a1a2e,#2a1500,#0a0a0f);
+    position:relative;flex-shrink:0;
+  }
+  .profile-cover-pattern {
+    position:absolute;inset:0;
+    background-image:radial-gradient(var(--border) 1px,transparent 1px);
+    background-size:24px 24px;opacity:0.4;
+  }
+  .profile-settings { position:absolute;top:50px;right:20px;width:36px;height:36px;background:rgba(0,0,0,0.5);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px; }
+  .profile-av-wrap { position:absolute;bottom:-36px;left:24px; }
+  .profile-av {
+    width:80px;height:80px;border-radius:24px;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    display:flex;align-items:center;justify-content:center;
+    font-size:36px;border:3px solid var(--bg);
+    font-weight:700;color:#fff;
+  }
+  .verified-badge { position:absolute;bottom:-4px;right:-4px;background:var(--green);border-radius:8px;padding:2px 6px;font-size:10px;color:#fff;font-weight:600;border:2px solid var(--bg); }
+
+  .profile-info { padding:48px 24px 16px; }
+  .profile-name { font-size:22px;font-weight:700;color:var(--text); }
+  .profile-handle { font-size:13px;color:var(--muted);margin-top:2px; }
+  .profile-rating { display:flex;align-items:center;gap:6px;margin-top:8px; }
+  .profile-stars { color:var(--accent);font-size:14px; }
+  .profile-rating-num { font-size:14px;font-weight:600;color:var(--text); }
+  .profile-rating-count { font-size:12px;color:var(--muted); }
+
+  .stats-row { display:flex;gap:0;margin:12px 0 20px;border:1px solid var(--border);border-radius:16px;overflow:hidden;background:var(--card); }
+  .stat-item { flex:1;padding:14px 8px;text-align:center;border-right:1px solid var(--border); }
+  .stat-item:last-child{border-right:none;}
+  .stat-num { font-size:20px;font-weight:700;color:var(--text); }
+  .stat-label { font-size:11px;color:var(--muted);margin-top:2px; }
+
+  .section-tabs { display:flex;gap:0;border-bottom:1px solid var(--border);margin:0 24px; }
+  .tab { flex:1;text-align:center;padding:12px 0;font-size:13px;font-weight:600;color:var(--muted);border-bottom:2px solid transparent; }
+  .tab.active { color:var(--accent);border-bottom-color:var(--accent); }
+
+  .profile-body { flex:1;overflow-y:auto; }
+  .profile-body::-webkit-scrollbar{display:none;}
+
+  .listing-mini-grid { display:grid;grid-template-columns:1fr 1fr 1fr;gap:3px;padding:3px 0; }
+  .lmg-item { aspect-ratio:1;background:var(--card);display:flex;align-items:center;justify-content:center;font-size:30px;position:relative; }
+  .lmg-price { position:absolute;bottom:4px;left:4px;background:rgba(0,0,0,0.7);border-radius:4px;font-size:9px;color:var(--accent);font-weight:600;padding:2px 5px; }
+
+  .menu-section { padding:0 24px 80px; }
+  .menu-item {
+    display:flex;align-items:center;gap:14px;
+    padding:16px 0;border-bottom:1px solid var(--border)66;
+  }
+  .menu-icon { width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px; }
+  .mi-or { background:var(--accent)22; }
+  .mi-fav { background:#e74c3c22; }
+  .mi-pay { background:var(--green)22; }
+  .mi-sec { background:var(--blue)22; }
+  .mi-help { background:var(--purple)22; }
+  .menu-label { flex:1;font-size:14px;font-weight:500;color:var(--text); }
+  .menu-arrow { color:var(--muted);font-size:18px; }
+  .menu-badge { background:var(--accent);color:#000;font-size:10px;font-weight:700;padding:2px 7px;border-radius:8px; }
+
+  /* REVIEWS */
+  .review-list { padding:16px 24px 80px; }
+  .review-card { background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:12px; }
+  .rev-header { display:flex;align-items:center;gap:10px;margin-bottom:10px; }
+  .rev-av { width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px; }
+  .rev-av1 { background:linear-gradient(135deg,#4a9eff,#6a4ef5); }
+  .rev-av2 { background:linear-gradient(135deg,#2ecc71,#1a8a4a); }
+  .rev-av3 { background:linear-gradient(135deg,#f5a623,#ff6b35); }
+  .rev-name { font-size:14px;font-weight:600;color:var(--text); }
+  .rev-date { font-size:11px;color:var(--muted);margin-top:2px; }
+  .rev-stars { margin-left:auto;color:var(--accent);font-size:13px; }
+  .rev-item-tag { display:inline-block;background:var(--border);color:var(--muted);font-size:11px;padding:3px 8px;border-radius:8px;margin-bottom:8px; }
+  .rev-text { font-size:13px;color:var(--muted);line-height:1.6;font-weight:300; }
+  .rev-helpful { font-size:12px;color:var(--blue);margin-top:10px; }
+
+  .bottom-nav {
+    position:absolute;bottom:0;left:0;right:0;height:80px;
+    background:var(--card);border-top:1px solid var(--border);
+    display:flex;align-items:center;justify-content:space-around;
+    padding:0 8px 16px;
+  }
+  .nav-item{display:flex;flex-direction:column;align-items:center;gap:4px;}
+  .nav-icon{font-size:22px;}
+  .nav-label{font-size:10px;color:var(--muted);}
+  .nav-add{width:52px;height:52px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:28px;color:#fff;margin-bottom:8px;box-shadow:0 8px 24px rgba(245,166,35,0.4);}
+</style>
+</head>
+<body>
+
+<!-- PAYMENT -->
+<div style="position:relative;margin-top:40px;">
+  <div class="label">Screen 9 – Payment</div>
+  <div class="phone">
+    <div class="screen">
+      <div class="status-bar"><span>9:41</span><span>📶 🔋</span></div>
+      <div class="pay-header">
+        <div class="pay-title">Checkout</div>
+        <div class="pay-sub">Review and complete your purchase</div>
+      </div>
+      <div class="scroll-area" style="padding-bottom:100px;">
+        <div class="order-summary">
+          <div class="os-item">
+            <div class="os-img">📷</div>
+            <div class="os-info">
+              <div class="os-name">Canon EOS M50 Mark II</div>
+              <div class="os-cond">✅ Good Condition · Verified Seller</div>
+            </div>
+            <div class="os-price">₹27,500</div>
+          </div>
+          <div class="os-divider"></div>
+          <div class="os-row"><span class="os-key">Item Price</span><span class="os-val">₹27,500</span></div>
+          <div class="os-row"><span class="os-key">Platform Fee</span><span class="os-val">₹0</span></div>
+          <div class="os-row"><span class="os-key">Buyer Protection</span><span class="os-val" style="color:var(--green);">FREE</span></div>
+          <div class="os-divider"></div>
+          <div class="os-row os-total"><span class="os-key">Total</span><span class="os-val">₹27,500</span></div>
+        </div>
+
+        <div class="pay-method-title">Payment Method</div>
+        <div class="pay-methods">
+          <div class="pay-method selected">
+            <div class="pay-icon pay-upi">💸</div>
+            <div class="pay-label">
+              <div class="pay-name">UPI</div>
+              <div class="pay-desc">GPay, PhonePe, Paytm, BHIM</div>
+            </div>
+            <div class="pay-radio on"></div>
+          </div>
+          <div class="pay-method">
+            <div class="pay-icon pay-card">💳</div>
+            <div class="pay-label">
+              <div class="pay-name">Debit / Credit Card</div>
+              <div class="pay-desc">Visa, Mastercard, RuPay</div>
+            </div>
+            <div class="pay-radio"></div>
+          </div>
+          <div class="pay-method">
+            <div class="pay-icon pay-wallet">👛</div>
+            <div class="pay-label">
+              <div class="pay-name">Wallets</div>
+              <div class="pay-desc">Paytm, Mobikwik, Freecharge</div>
+            </div>
+            <div class="pay-radio"></div>
+          </div>
+          <div class="pay-method">
+            <div class="pay-icon pay-cod">💰</div>
+            <div class="pay-label">
+              <div class="pay-name">Cash on Delivery</div>
+              <div class="pay-desc">Pay when you receive the item</div>
+            </div>
+            <div class="pay-radio"></div>
+          </div>
+        </div>
+        <div class="upi-input-wrap">
+          <input class="upi-input" type="text" placeholder="Enter UPI ID (e.g. name@upi)" value="arjun.mehta@oksbi">
+        </div>
+      </div>
+      <div class="pay-footer">
+        <div class="secure-tag">🔒 Secured by 256-bit SSL encryption</div>
+        <button class="pay-btn">Pay ₹27,500 Securely</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ORDER TRACKING -->
+<div style="position:relative;margin-top:40px;">
+  <div class="label">Screen 10 – Order Tracking</div>
+  <div class="phone">
+    <div class="screen">
+      <div class="status-bar"><span>9:41</span><span>📶 🔋</span></div>
+      <div class="track-header">
+        <div class="track-id">Order #TH-2024-8821</div>
+        <div class="track-title">Track Order</div>
+      </div>
+      <div class="track-product">
+        <div class="tp-img">📷</div>
+        <div>
+          <div class="tp-name">Canon EOS M50 Mark II</div>
+          <div class="tp-price">₹27,500 · UPI Paid ✓</div>
+          <div class="tp-status">In Transit</div>
+        </div>
+      </div>
+      <div class="track-map">
+        <div class="map-dots"></div>
+        <div class="map-route"></div>
+        <div class="map-pin start">🏠</div>
+        <div class="map-pin end">📍</div>
+        <div class="map-rider">🛵</div>
+        <div class="map-label">Estimated: 2:30 PM today</div>
+      </div>
+      <div class="timeline">
+        <div class="tl-title">Delivery Timeline</div>
+        <div class="tl-step">
+          <div class="tl-left">
+            <div class="tl-dot done">✓</div>
+            <div class="tl-line done"></div>
+          </div>
+          <div class="tl-info">
+            <div class="tl-label">Order Confirmed</div>
+            <div class="tl-desc">Payment received. Seller notified.</div>
+            <div class="tl-time">Today, 10:30 AM</div>
+          </div>
+        </div>
+        <div class="tl-step">
+          <div class="tl-left">
+            <div class="tl-dot done">✓</div>
+            <div class="tl-line done"></div>
+          </div>
+          <div class="tl-info">
+            <div class="tl-label">Item Handed Over</div>
+            <div class="tl-desc">Rahul packed and handed to delivery.</div>
+            <div class="tl-time">Today, 11:45 AM</div>
+          </div>
+        </div>
+        <div class="tl-step">
+          <div class="tl-left">
+            <div class="tl-dot active">🛵</div>
+            <div class="tl-line partial"></div>
+          </div>
+          <div class="tl-info">
+            <div class="tl-label">Out for Delivery</div>
+            <div class="tl-desc">Agent is 3.2 km away from your location.</div>
+            <div class="tl-time">Today, 1:10 PM · In Progress</div>
+          </div>
+        </div>
+        <div class="tl-step">
+          <div class="tl-left">
+            <div class="tl-dot pending">4</div>
+          </div>
+          <div class="tl-info">
+            <div class="tl-label pending">Delivered</div>
+            <div class="tl-desc">Estimated by 2:30 PM</div>
+          </div>
+        </div>
+      </div>
+      <div class="track-footer">
+        <button class="contact-seller-btn">💬 Contact Seller &nbsp;&nbsp; 📞 Call Agent</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PROFILE + REVIEWS -->
+<div style="position:relative;margin-top:40px;">
+  <div class="label">Screen 11 – Profile & Reviews</div>
+  <div class="phone">
+    <div class="screen">
+      <div class="status-bar" style="position:absolute;top:0;left:0;right:0;z-index:10;"><span>9:41</span><span>📶 🔋</span></div>
+      <div class="profile-cover">
+        <div class="profile-cover-pattern"></div>
+        <div class="profile-settings">⚙️</div>
+        <div class="profile-av-wrap">
+          <div class="profile-av">A</div>
+          <div class="verified-badge">✓ KYC</div>
+        </div>
+      </div>
+      <div class="profile-body">
+        <div class="profile-info">
+          <div class="profile-name">Arjun Mehta</div>
+          <div class="profile-handle">@arjun.ahmedabad · Member since 2022</div>
+          <div class="profile-rating">
+            <span class="profile-stars">★★★★★</span>
+            <span class="profile-rating-num">4.9</span>
+            <span class="profile-rating-count">(48 reviews)</span>
+            <span style="margin-left:8px;background:var(--green)22;color:var(--green);font-size:11px;padding:2px 8px;border-radius:8px;font-weight:600;">✅ Verified</span>
+          </div>
+          <div class="stats-row">
+            <div class="stat-item"><div class="stat-num">23</div><div class="stat-label">Listings</div></div>
+            <div class="stat-item"><div class="stat-num">41</div><div class="stat-label">Sold</div></div>
+            <div class="stat-item"><div class="stat-num">12</div><div class="stat-label">Bought</div></div>
+            <div class="stat-item"><div class="stat-num">4.9⭐</div><div class="stat-label">Rating</div></div>
+          </div>
+        </div>
+
+        <div class="section-tabs">
+          <div class="tab">Listings</div>
+          <div class="tab active">Reviews</div>
+          <div class="tab">History</div>
+        </div>
+
+        <!-- Reviews -->
+        <div class="review-list">
+          <div class="review-card">
+            <div class="rev-header">
+              <div class="rev-av rev-av1">👩</div>
+              <div><div class="rev-name">Priya Shah</div><div class="rev-date">Dec 12, 2024</div></div>
+              <div class="rev-stars">★★★★★</div>
+            </div>
+            <div class="rev-item-tag">📷 Canon EOS M50</div>
+            <div class="rev-text">Amazing seller! Camera was exactly as described. Quick response, safe meetup, and even helped me understand the settings. Highly recommend! 🙌</div>
+            <div class="rev-helpful">👍 8 found this helpful</div>
+          </div>
+          <div class="review-card">
+            <div class="rev-header">
+              <div class="rev-av rev-av2">👦</div>
+              <div><div class="rev-name">Dev Patel</div><div class="rev-date">Nov 28, 2024</div></div>
+              <div class="rev-stars">★★★★★</div>
+            </div>
+            <div class="rev-item-tag">🎮 PS5 Controller</div>
+            <div class="rev-text">Super smooth transaction. Controller was in perfect condition. Payment was easy via UPI. Would buy from again!</div>
+            <div class="rev-helpful">👍 5 found this helpful</div>
+          </div>
+          <div class="review-card">
+            <div class="rev-header">
+              <div class="rev-av rev-av3">👩</div>
+              <div><div class="rev-name">Sneha Joshi</div><div class="rev-date">Nov 10, 2024</div></div>
+              <div class="rev-stars">★★★★☆</div>
+            </div>
+            <div class="rev-item-tag">🎧 Sony WH-1000XM4</div>
+            <div class="rev-text">Good seller, item arrived on time. Minor scratch not mentioned in listing but seller gave ₹200 discount — fair!</div>
+            <div class="rev-helpful">👍 3 found this helpful</div>
+          </div>
+        </div>
+      </div>
+      <div class="bottom-nav">
+        <div class="nav-item"><span class="nav-icon">🏠</span><span class="nav-label">Home</span></div>
+        <div class="nav-item"><span class="nav-icon">🔍</span><span class="nav-label">Explore</span></div>
+        <div class="nav-add">＋</div>
+        <div class="nav-item"><span class="nav-icon">💬</span><span class="nav-label">Chats</span></div>
+        <div class="nav-item"><span class="nav-icon">👤</span><span class="nav-label" style="color:var(--accent);">Profile</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
