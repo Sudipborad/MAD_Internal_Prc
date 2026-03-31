@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "542406293496",
+    "project_id": "p2p-marketplace-fc99b",
+    "storage_bucket": "p2p-marketplace-fc99b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:542406293496:android:82d1aa7e8a0eb52901080d",
+        "android_client_info": {
+          "package_name": "com.tradehub.marketplace"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCgSYabCr1NtomgXsxPZSPJ9d4XAHGa_S0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

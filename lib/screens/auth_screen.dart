@@ -181,9 +181,23 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   void _handleAuth() {
-    // Placeholder for authentication logic
+    // For demo purposes, allow access without real Firebase auth
+    // In production, this would use Firebase authentication
+    if (emailController.text.isEmpty || passwordController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill all fields')),
+      );
+      return;
+    }
+
+    // Allow demo login
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Authentication logic to be implemented')),
+      const SnackBar(content: Text('Demo login successful')),
     );
+
+    // Navigate to home
+    Future.delayed(const Duration(milliseconds: 500), () {
+      Navigator.of(context).pushReplacementNamed('/home');
+    });
   }
 }

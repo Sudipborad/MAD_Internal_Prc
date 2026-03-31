@@ -1,56 +1,39 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthProvider extends ChangeNotifier {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  User? _currentUser;
+  // Mock user for demo
+  bool _isAuthenticated = false;
 
-  User? get currentUser => _currentUser;
+  bool get isAuthenticated => _isAuthenticated;
 
   AuthProvider() {
-    _auth.authStateChanges().listen((User? user) {
-      _currentUser = user;
-      notifyListeners();
-    });
+    // Initialize auth state
   }
 
-  Stream<User?> get authStateStream => _auth.authStateChanges();
+  Stream get authStateStream {
+    // Return a stream that emits null initially (not logged in)
+    return Stream.value(null);
+  }
 
   Future<void> signUpWithEmail(String email, String password) async {
-    try {
-      await _auth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-    } catch (e) {
-      rethrow;
-    }
+    // Mock implementation
+    _isAuthenticated = true;
+    notifyListeners();
   }
 
   Future<void> signInWithEmail(String email, String password) async {
-    try {
-      await _auth.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-    } catch (e) {
-      rethrow;
-    }
+    // Mock implementation
+    _isAuthenticated = true;
+    notifyListeners();
   }
 
   Future<void> signOut() async {
-    try {
-      await _auth.signOut();
-    } catch (e) {
-      rethrow;
-    }
+    // Mock implementation
+    _isAuthenticated = false;
+    notifyListeners();
   }
 
   Future<void> resetPassword(String email) async {
-    try {
-      await _auth.sendPasswordResetEmail(email: email);
-    } catch (e) {
-      rethrow;
-    }
+    // Mock implementation
   }
 }

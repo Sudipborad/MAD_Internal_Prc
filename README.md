@@ -1,6 +1,7 @@
 # TradeHub - Peer-to-Peer Marketplace App
 
 ## Overview
+
 TradeHub is a Flutter-based Peer-to-Peer Marketplace application that enables users to buy and sell second-hand goods efficiently. The app features product listings with images, in-app chat, ratings & reviews, secure payments, and offline browsing capabilities.
 
 ## Project Structure
@@ -26,6 +27,7 @@ tradehub_marketplace/
 ## Development Modules
 
 ### Module 1: Initialization ✅
+
 - **Status**: COMPLETED
 - **Features**:
   - Project setup with Flutter
@@ -38,6 +40,7 @@ tradehub_marketplace/
   - Home screen with product browsing
 
 **Key Files**:
+
 - `pubspec.yaml` - Dependencies
 - `lib/main.dart` - App entry point
 - `lib/config/theme.dart` - Theme configuration
@@ -52,6 +55,7 @@ tradehub_marketplace/
 ---
 
 ### Module 2: Listing Module ⏳
+
 - **Status**: PENDING
 - **Features**:
   - Add product listings
@@ -64,6 +68,7 @@ tradehub_marketplace/
 ---
 
 ### Module 3: Chat System ⏳
+
 - **Status**: PENDING
 - **Features**:
   - Real-time chat between buyers and sellers
@@ -74,6 +79,7 @@ tradehub_marketplace/
 ---
 
 ### Module 4: Payment & UI Polish ⏳
+
 - **Status**: PENDING
 - **Features**:
   - Secure payment integration
@@ -87,6 +93,7 @@ tradehub_marketplace/
 ## Getting Started
 
 ### Prerequisites
+
 - Flutter 3.0+
 - Firebase project
 - Dart 3.0+
@@ -94,12 +101,14 @@ tradehub_marketplace/
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/Sudipborad/MAD_Internal_Prc.git
    cd MAD_Internal_Prc
    ```
 
 2. **Install dependencies**
+
    ```bash
    flutter pub get
    ```
@@ -129,6 +138,7 @@ tradehub_marketplace/
 ## Design Reference
 
 The UI design is based on modern dark theme principles with:
+
 - Custom color scheme (Orange accent #f5a623, Red #ff6b35)
 - Responsive layouts
 - Smooth animations
@@ -138,12 +148,12 @@ The UI design is based on modern dark theme principles with:
 
 ## Commit History
 
-| Commit | Module | Description |
-|--------|--------|-------------|
+| Commit  | Module         | Description                                            |
+| ------- | -------------- | ------------------------------------------------------ |
 | Initial | Initialization | Project setup with Flutter, Firebase, and base screens |
-| WIP | Listing Module | Add product listings and filtering |
-| WIP | Chat System | Real-time messaging system |
-| WIP | Payment & UI | Payments, reviews, and UI polish |
+| WIP     | Listing Module | Add product listings and filtering                     |
+| WIP     | Chat System    | Real-time messaging system                             |
+| WIP     | Payment & UI   | Payments, reviews, and UI polish                       |
 
 ---
 

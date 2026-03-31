@@ -1,12 +1,12 @@
 name: tradehub_marketplace
 description: A Peer-to-Peer Marketplace Flutter App for buying and selling second-hand goods.
 
-publish_to: 'none'
+publish_to: "none"
 
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'
+  sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
   flutter:
@@ -34,16 +34,6 @@ dependencies:
   flutter_animate: ^4.2.0
   lottie: ^3.1.0
 
-  # Firebase
-  firebase_core: ^2.24.0
-  firebase_auth: ^4.10.0
-  firebase_database: ^10.2.0
-  cloud_firestore: ^4.13.0
-  firebase_storage: ^11.2.0
-
-  # Notifications
-  firebase_messaging: ^14.6.0
-
   # Datetime
   intl: ^0.19.0
 
@@ -66,12 +56,5 @@ flutter:
     - assets/icons/
     - assets/lottie/
 
-  fonts:
-    - family: DM Sans
-      fonts:
-        - asset: assets/fonts/DMSans-Regular.ttf
-        - asset: assets/fonts/DMSans-Bold.ttf
-          weight: 700
-    - family: Bebas Neue
-      fonts:
-        - asset: assets/fonts/BebasNeue-Regular.ttf
+  # Fonts will use Google Fonts from package
+  # Custom fonts commented out - use google_fonts package instead

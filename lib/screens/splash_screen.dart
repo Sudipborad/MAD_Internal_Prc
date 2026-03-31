@@ -73,9 +73,7 @@ class _SplashScreenState extends State<SplashScreen> {
                   ),
                 )
                     .animate(onPlay: (controller) => controller.repeat())
-                    .scale(duration: 1500.ms, end: 1.1, begin: 1.0)
-                    .then()
-                    .scale(duration: 1500.ms, end: 1.0, begin: 1.1),
+                    .scale(duration: 1500.ms, end: 1.1),
                 const SizedBox(height: 32),
                 // Logo text
                 Text(

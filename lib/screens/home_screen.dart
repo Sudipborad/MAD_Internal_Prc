@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import '../config/theme.dart';
+import '../models/product_model.dart';
+import 'add_listing_screen.dart';
+import 'product_detail_screen.dart';
+import 'wallet_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -226,6 +230,7 @@ class _HomeScreenState extends State<HomeScreen> {
         currentIndex: currentIndex,
         onTap: (index) {
           setState(() => currentIndex = index);
+          _handleNavigation(index);
         },
         items: const [
           BottomNavigationBarItem(
@@ -245,8 +250,8 @@ class _HomeScreenState extends State<HomeScreen> {
             label: 'Chat',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
+            icon: Icon(Icons.account_balance_wallet),
+            label: 'Wallet',
           ),
         ],
       ),
@@ -254,9 +259,30 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget buildProductCard(BuildContext context, int index) {
+    // Create mock product for demo
+    final mockProduct = Product(
+      id: 'prod_$index',
+      sellerId: 'seller_1',
+      title: 'Vintage Camera #${index + 1}',
+      description: 'A beautiful vintage camera in great condition. Perfect for collectors.',
+      price: 89.99 + (index * 10),
+      category: 'Electronics',
+      imageUrls: ['image1.jpg', 'image2.jpg'],
+      condition: 'good',
+      status: 'available',
+      views: 120 + (index * 30),
+      likes: 12 + (index * 5),
+      createdAt: DateTime.now(),
+    );
+
     return GestureDetector(
       onTap: () {
-        // Navigate to product details
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ProductDetailScreen(product: mockProduct),
+          ),
+        );
       },
       child: Container(
         decoration: BoxDecoration(
@@ -330,6 +356,44 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
             ),
+
+  void _handleNavigation(int index) {
+    switch (index) {
+      case 0:
+        // Home - already there
+        break;
+      case 1:
+        // Favorites - not implemented yet
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Favorites feature coming soon')),
+        );
+        break;
+      case 2:
+        // Sell - Add listing
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const AddListingScreen(),
+          ),
+        );
+        break;
+      case 3:
+        // Chat - not implemented yet
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Chat feature in Module 3')),
+        );
+        break;
+      case 4:
+        // Wallet
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const WalletScreen(),
+          ),
+        );
+        break;
+    }
+  }
           ],
         ),
       ),

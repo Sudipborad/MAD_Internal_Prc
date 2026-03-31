@@ -9,31 +9,31 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyDemoKey',
-    appId: '1:123456789:web:abcdef123456',
-    messagingSenderId: '123456789',
-    projectId: 'tradehub-marketplace',
-    authDomain: 'tradehub-marketplace.firebaseapp.com',
-    databaseURL: 'https://tradehub-marketplace.firebaseio.com',
-    storageBucket: 'tradehub-marketplace.appspot.com',
-    measurementId: 'G-ABCDEF1234',
+    apiKey: 'AIzaSyCs0RV75JguEOCcrmWqIMmsHZB-eubYKuw',
+    appId: '1:542406293496:web:e15ca3f92760ab9101080d',
+    messagingSenderId: '542406293496',
+    projectId: 'p2p-marketplace-fc99b',
+    authDomain: 'p2p-marketplace-fc99b.firebaseapp.com',
+    databaseURL: 'https://p2p-marketplace-fc99b.firebaseio.com',
+    storageBucket: 'p2p-marketplace-fc99b.firebasestorage.app',
+    measurementId: 'G-3NJR4W0FES',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDemoKey',
-    appId: '1:123456789:android:abcdef123456',
-    messagingSenderId: '123456789',
-    projectId: 'tradehub-marketplace',
-    databaseURL: 'https://tradehub-marketplace.firebaseio.com',
-    storageBucket: 'tradehub-marketplace.appspot.com',
+    apiKey: 'AIzaSyCgSYabCr1NtomgXsxPZSPJ9d4XAHGa_S0',
+    appId: '1:542406293496:android:82d1aa7e8a0eb52901080d',
+    messagingSenderId: '542406293496',
+    projectId: 'p2p-marketplace-fc99b',
+    databaseURL: 'https://p2p-marketplace-fc99b.firebaseio.com',
+    storageBucket: 'p2p-marketplace-fc99b.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyDemoKey',
-    appId: '1:123456789:ios:abcdef123456',
-    messagingSenderId: '123456789',
-    projectId: 'tradehub-marketplace',
-    databaseURL: 'https://tradehub-marketplace.firebaseio.com',
-    storageBucket: 'tradehub-marketplace.appspot.com',
+    apiKey: 'AIzaSyCs0RV75JguEOCcrmWqIMmsHZB-eubYKuw',
+    appId: '1:542406293496:ios:e15ca3f92760ab9101080d',
+    messagingSenderId: '542406293496',
+    projectId: 'p2p-marketplace-fc99b',
+    databaseURL: 'https://p2p-marketplace-fc99b.firebaseio.com',
+    storageBucket: 'p2p-marketplace-fc99b.firebasestorage.app',
   );
 }
